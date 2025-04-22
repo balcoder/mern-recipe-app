@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 
+// connect to mogodb database
 mongoose.connect(process.env.MONGO_URI)
    .then(() => {
       console.log('Connected to MongoDB');
@@ -12,12 +13,13 @@ mongoose.connect(process.env.MONGO_URI)
       console.log(err);
    });
 
-
+// create the express app and set port varaible
 const app = express();
+const port = 3000;
 
 // allow server to accept json
 app.use(express.json());
-const port = 3000;
+
 
  app.use("/api/user", userRouter);
  app.use('/api/auth', authRouter);
