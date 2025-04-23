@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice.js";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -18,7 +25,8 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      // setLoading(true);
+      dispatch(signInStart());
       // in order to use the url '/api/auth/signup' from the client side
       // to the api side we need to use a proxy configured in vite.config.js
       // "/api/auth/signup" comes from auth.route.js in api/routes
@@ -34,16 +42,19 @@ export default function SignIn() {
       // api/index.js sets success to false in error
       // handling middleware
       if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
+        // setError(data.message);
+        // setLoading(false);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setLoading(false); // loading done
-      setError(null);
+      // setLoading(false); // loading done
+      // setError(null);
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      setLoading(false);
-      setError(error.message);
+      // setLoading(false);
+      // setError(error.message);
+      dispatch(signInFailure(error.message));
     }
   };
   return (
