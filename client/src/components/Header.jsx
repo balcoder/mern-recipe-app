@@ -40,6 +40,7 @@ export default function Header() {
               <img
                 className="rounded-full h-7 w-7 object-cover"
                 src={currentUser.avatar}
+                referrerPolicy="no-referrer"
                 alt="profile"
               />
             ) : (
