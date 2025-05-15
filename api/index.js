@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
+import cookieParser from 'cookie-parser';
 
 // connect to mogodb database
 mongoose.connect(process.env.MONGO_URI)
@@ -19,6 +20,8 @@ const port = 3000;
 
 // allow server to accept json
 app.use(express.json());
+
+app.use(cookieParser());
 
 
  app.use("/api/user", userRouter);
