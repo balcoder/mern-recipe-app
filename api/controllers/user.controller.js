@@ -2,32 +2,72 @@ import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 
-export const test = (req, res) => {
-    res.json({
-        message: 'Hello World! from controllers/user.controller.js is Foo'
-    })
-}
-
 export const updateUser = async (req, res, next) => {
-    if(req.user.id !== req.params.id) return next(errorHandler(401, "You can only update your own profile"));
-    try {
-        if(req.body.password) {
-            req.body.password = bcryptjs.hashSync(req.body.password, 10);
-        }
+  if (req.user.id !== req.params.id)
+    return next(errorHandler(401, "You can only update your own profile"));
+  try {
+    // Only process fields that are provided
+    const updateFields = {};
 
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-            $set:{
-                username: req.body.username,
-                email: req.body.email,
-                password: req.body.password,
-                avatar: req.body.avatar,
-            }
-        }, {new: true})
-        // seperate password from other data
-        const {password, ...rest} = updatedUser._doc;
+    if (req.body.username) updateFields.username = req.body.username;
+    if (req.body.email) updateFields.email = req.body.email;
+    if (req.body.avatar) updateFields.avatar = req.body.avatar;
 
-        res.status(200).json(rest);
-    } catch (error) {
-        next(error);
+    // Handle password separately for hashing
+    if (req.body.password) {
+      if (req.body.password.length < 6) {
+        return next(
+          errorHandler(400, "Password must be at least 6 characters long")
+        );
+      }
+      updateFields.password = bcryptjs.hashSync(req.body.password, 10);
     }
+
+    // Only proceed if there are fields to update
+    if (Object.keys(updateFields).length === 0) {
+      return next(errorHandler(400, "No valid update fields provided"));
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return next(errorHandler(404, "User not found"));
+    }
+
+    // Separate password from other data
+    const { password, ...rest } = updatedUser._doc;
+    res.status(200).json(rest);
+
+    // if(req.body.password) {
+    //     if(req.body.password.length < 6) {
+    //         res.status(400)
+    //         throw new Error('Password must be at least 6 characters long')
+    //     } else {
+    //         req.body.password = bcryptjs.hashSync(req.body.password, 10);
+    //     }
+    // }
+
+    // const updatedUser = await User.findByIdAndUpdate(req.params.id, {
+    //     $set:{
+    //         username: req.body.username,
+    //         email: req.body.email,
+    //         password: req.body.password,
+    //         avatar: req.body.avatar,
+    //     }
+    // }, {new: true})
+    // // seperate password from other data
+    // const {password, ...rest} = updatedUser._doc;
+
+    // res.status(200).json(rest);
+  } catch (error) {
+    if (error.code === 11000) {
+      // MongoDB duplicate key error
+      return next(errorHandler(400, "Username or email already exists"));
+    }
+    next(error);
+  }
 };
