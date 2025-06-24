@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import {
   getDownloadURL,
   getStorage,
@@ -32,36 +32,64 @@ export default function Profile() {
   // allow write: if request.resource.size < 2 * 1024 * 1024 &&
   // request.resource.contentType.matches('image/.*');
 
-  const handleFileUpload = (file) => {
-    const storage = getStorage(app);
-    const fileName = new Date().getTime() + file.name;
-    // set up reference to firebase storage
-    const storageRef = ref(storage, fileName);
-    // use uploadTask to get the % of file uploaded
-    const uploadTask = uploadBytesResumable(storageRef, file);
+  const handleFileUpload = useCallback(
+    (file) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Progerss handler
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setFilePerc(Math.round(progress));
+        },
+        (error) => {
+          console.log(error);
+          setFileUploadError(true);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downLoadURL) => {
+            setFormData({ ...formData, avatar: downLoadURL });
+          });
+        }
+      );
+    },
+    [formData]
+  ); // Include formData in dependencies since it's used in the completion handler
 
-        setFilePerc(Math.round(progress));
-      },
-      (error) => {
-        // Error handler
-        console.log(error);
-        setFileUploadError(true);
-      },
-      () => {
-        // Completion handler
-        getDownloadURL(uploadTask.snapshot.ref).then((downLoadURL) => {
-          setFormData({ ...formData, avatar: downLoadURL });
-        });
-      }
-    );
-  };
+  // const handleFileUpload = (file) => {
+  //   const storage = getStorage(app);
+  //   const fileName = new Date().getTime() + file.name;
+  //   // set up reference to firebase storage
+  //   const storageRef = ref(storage, fileName);
+  //   // use uploadTask to get the % of file uploaded
+  //   const uploadTask = uploadBytesResumable(storageRef, file);
+
+  //   uploadTask.on(
+  //     "state_changed",
+  //     (snapshot) => {
+  //       // Progress handler
+  //       const progress =
+  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+  //       setFilePerc(Math.round(progress));
+  //     },
+  //     (error) => {
+  //       // Error handler
+  //       console.log(error);
+  //       setFileUploadError(true);
+  //     },
+  //     () => {
+  //       // Completion handler
+  //       getDownloadURL(uploadTask.snapshot.ref).then((downLoadURL) => {
+  //         setFormData({ ...formData, avatar: downLoadURL });
+  //       });
+  //     }
+  //   );
+  // };
   const handleChange = (e) => {
     // change formData based on id of the input tag
     setFormData({ ...formData, [e.target.id]: e.target.value });

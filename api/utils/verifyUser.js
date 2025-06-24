@@ -10,7 +10,10 @@ export const verifyToken = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return next(errorHandler(403, "Forbidden"));
 
+    // we have a verified user so save to the request
     req.user = user;
+
+    // goto next on the route,(updateUser) routes/user.route.js
     next();
   });
 };

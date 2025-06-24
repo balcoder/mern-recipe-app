@@ -3,6 +3,7 @@ import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 
 export const updateUser = async (req, res, next) => {
+  //compare id returned form verifyUser.js to the id in params
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, "You can only update your own profile"));
   try {
@@ -30,39 +31,19 @@ export const updateUser = async (req, res, next) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
+      // $set ignores empty fields
       { $set: updateFields },
-      { new: true }
+      { new: true } //returns updated user object
     );
 
     if (!updatedUser) {
       return next(errorHandler(404, "User not found"));
     }
 
-    // Separate password from other data
+    // Seperate password from the rest of data and send rest
+    // as json response
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);
-
-    // if(req.body.password) {
-    //     if(req.body.password.length < 6) {
-    //         res.status(400)
-    //         throw new Error('Password must be at least 6 characters long')
-    //     } else {
-    //         req.body.password = bcryptjs.hashSync(req.body.password, 10);
-    //     }
-    // }
-
-    // const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-    //     $set:{
-    //         username: req.body.username,
-    //         email: req.body.email,
-    //         password: req.body.password,
-    //         avatar: req.body.avatar,
-    //     }
-    // }, {new: true})
-    // // seperate password from other data
-    // const {password, ...rest} = updatedUser._doc;
-
-    // res.status(200).json(rest);
   } catch (error) {
     if (error.code === 11000) {
       // MongoDB duplicate key error
@@ -73,6 +54,7 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
+  // req.user.id comes from verifyUser JWT
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, "You can only delete your own profile"));
   try {
