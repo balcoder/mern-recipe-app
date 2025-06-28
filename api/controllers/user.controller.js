@@ -3,7 +3,7 @@ import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 
 export const updateUser = async (req, res, next) => {
-  //compare id returned form verifyUser.js to the id in params
+  //compare id returned form verifyUser.js(req.user.id) to the id in params
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, "You can only update your own profile"));
   try {

@@ -14,6 +14,7 @@ export const signup = async (req, res, next) => {
     res.status(201).json("User created successfully");
   } catch (error) {
     console.log(error);
+    // use middleware for handling errors in index.js
     next(error);
   }
 };
@@ -27,6 +28,7 @@ export const signin = async (req, res, next) => {
     // if valid email check if valid password
     const validPassword = bcrypt.compareSync(password, validUser.password);
     if (!validPassword) return next(errorHandler(401, "Invalid credentials"));
+    // save the cookie using the id stored in mogodb and add the secret
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     // destructure the user so we can remove the password
     const { password: pass, ...rest } = validUser._doc;
@@ -37,6 +39,15 @@ export const signin = async (req, res, next) => {
       .json(rest);
   } catch (error) {
     // handle errors using middleware in index.js
+    next(error);
+  }
+};
+
+export const signout = async (req, res, next) => {
+  try {
+    res.clearCookie("access_token");
+    res.status(200).json("User has been logged out!");
+  } catch (error) {
     next(error);
   }
 };

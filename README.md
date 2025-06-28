@@ -1,0 +1,38 @@
+# Full Stack MERN Auctioneer App
+
+### About
+
+Full stack MERN (MongoDB, Express.js, React, and Node.js.) base site with authentication using JWT, Firebase, and Google OAuth to use as a starter app with all the signup, signin, and authentication
+taken completed.
+
+### To Run
+
+1. Clone to folder of your choice.
+2. Change the env.example content to your information from mongodb and make your own unique
+   Json web token (jwt) secret key, just tap on your keyboard a bunch of times.
+3. Then save env.example as .env
+4. Now you can run npm run dev in both the root folder which is the backend api
+   and client folder which is the react frontend.
+
+5. In the root of the app which is your backend run _npm run dev_
+   The api terminal should look like this after running _npm run dev_
+   [nodemon] 3.1.9
+   [nodemon] to restart at any time, enter `rs`
+   [nodemon] watching path(s): _._
+   [nodemon] watching extensions: js,mjs,cjs,json
+   [nodemon] starting `node api/index.js`
+   Express Server running on port 3000!!!
+   Connected to MongoDB
+
+6. Open up another terminal and cd into the client folder and run _npm run dev_
+   The terminal should look like this.
+
+VITE v6.2.5 ready in 4365 ms
+
+➜ Local: http://localhost:5173/
+➜ Network: use --host to expose
+➜ press h + enter to show help
+
+ctrl+click http://localhost:5173/ and you will see your app in the browser
+
+Good luck with your app.
