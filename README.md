@@ -11,10 +11,12 @@ taken completed.
 2. Change the env.example content to your information from mongodb and make your own unique
    Json web token (jwt) secret key, just tap on your keyboard a bunch of times.
 3. Then save env.example as .env
-4. Now you can run npm run dev in both the root folder which is the backend api
+4. Change the env.example for firebase in the client folder to your firebase key and
+   save it as .env
+5. Now you can run npm run dev in both the root folder which is the backend api
    and client folder which is the react frontend.
 
-5. In the root of the app which is your backend run _npm run dev_
+6. In the root of the app which is your backend run _npm run dev_
    The api terminal should look like this after running _npm run dev_
    [nodemon] 3.1.9
    [nodemon] to restart at any time, enter `rs`
@@ -24,7 +26,7 @@ taken completed.
    Express Server running on port 3000!!!
    Connected to MongoDB
 
-6. Open up another terminal and cd into the client folder and run _npm run dev_
+7. Open up another terminal and cd into the client folder and run _npm run dev_
    The terminal should look like this.
 
 VITE v6.2.5 ready in 4365 ms
