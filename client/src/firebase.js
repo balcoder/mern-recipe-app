@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+// import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -13,8 +13,8 @@ const firebaseConfig = {
   storageBucket: "mern-recipe-app-ce8c5.firebasestorage.app",
   messagingSenderId: "819642081667",
   appId: "1:819642081667:web:5d201b9d0036204ce7d6b6",
-  measurementId: "G-C32YTY369L"
+  measurementId: "G-C32YTY369L",
 };
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);

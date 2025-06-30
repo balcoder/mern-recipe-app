@@ -29,7 +29,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
-
+  console.log(file);
   // firebase storage rules
   // allow read;
   // allow write: if request.resource.size < 2 * 1024 * 1024 &&
@@ -55,44 +55,27 @@ export default function Profile() {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downLoadURL) => {
-            setFormData({ ...formData, avatar: downLoadURL });
+            // setFormData({ ...formData, avatar: downLoadURL });
+            // Use functional update instead of spreading formData to
+            // stop infinite loop
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              avatar: downLoadURL,
+            }));
           });
         }
       );
     },
-    [formData]
-  ); // Include formData in dependencies since it's used in the completion handler
+    // [formData]
+    []
+  );
 
-  // const handleFileUpload = (file) => {
-  //   const storage = getStorage(app);
-  //   const fileName = new Date().getTime() + file.name;
-  //   // set up reference to firebase storage
-  //   const storageRef = ref(storage, fileName);
-  //   // use uploadTask to get the % of file uploaded
-  //   const uploadTask = uploadBytesResumable(storageRef, file);
+  useEffect(() => {
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [file, handleFileUpload]);
 
-  //   uploadTask.on(
-  //     "state_changed",
-  //     (snapshot) => {
-  //       // Progress handler
-  //       const progress =
-  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-  //       setFilePerc(Math.round(progress));
-  //     },
-  //     (error) => {
-  //       // Error handler
-  //       console.log(error);
-  //       setFileUploadError(true);
-  //     },
-  //     () => {
-  //       // Completion handler
-  //       getDownloadURL(uploadTask.snapshot.ref).then((downLoadURL) => {
-  //         setFormData({ ...formData, avatar: downLoadURL });
-  //       });
-  //     }
-  //   );
-  // };
   const handleChange = (e) => {
     // change formData based on id of the input tag
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -134,11 +117,6 @@ export default function Profile() {
       dispatch(deleteUserFailure(error.message));
     }
   };
-  useEffect(() => {
-    if (file) {
-      handleFileUpload(file);
-    }
-  }, [file]);
 
   const handleSignOut = async (req, res, next) => {
     try {

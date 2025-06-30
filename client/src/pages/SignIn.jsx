@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,8 +10,7 @@ import OAuth from "../components/OAuth.jsx";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  // const [error, setError] = useState(null);
-  // const [loading, setLoading] = useState(false);
+  // state.user coming from userSlice named user
   const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,7 +25,6 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // setLoading(true);
       dispatch(signInStart());
       // in order to use the url '/api/auth/signup' from the client side
       // to the api side we need to use a proxy configured in vite.config.js
@@ -43,18 +41,12 @@ export default function SignIn() {
       // api/index.js sets success to false in error
       // handling middleware
       if (data.success === false) {
-        // setError(data.message);
-        // setLoading(false);
         dispatch(signInFailure(data.message));
         return;
       }
-      // setLoading(false); // loading done
-      // setError(null);
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      // setLoading(false);
-      // setError(error.message);
       dispatch(signInFailure(error.message));
     }
   };

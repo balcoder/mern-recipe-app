@@ -6,13 +6,13 @@ export default function Home() {
   return (
     <div>
       <div>Home</div>
-      <div>
+      {/* <div>
         <img
           src={currentUser.avatar}
           referrerPolicy="no-referrer"
           alt="profile"
         />
-      </div>
+      </div> */}
     </div>
   );
 }
