@@ -40,6 +40,7 @@ export default function Profile() {
       const storage = getStorage(app);
       const fileName = new Date().getTime() + file.name;
       const storageRef = ref(storage, fileName);
+      // use uploadBytesResumable to see the progress of the upload
       const uploadTask = uploadBytesResumable(storageRef, file);
 
       uploadTask.on(
@@ -156,7 +157,7 @@ export default function Profile() {
               Error uploading Image(image must be less than 2mb)
             </span>
           ) : filePerc > 0 && filePerc < 100 ? (
-            <span className="text-slate-700">{`Uploading ${filePerc}`}</span>
+            <span className="text-green-700">{`Uploading ${filePerc}%`}</span>
           ) : filePerc === 100 ? (
             <span className="text-green-700">Image uploaded successfully</span>
           ) : (
