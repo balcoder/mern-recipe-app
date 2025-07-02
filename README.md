@@ -1,4 +1,4 @@
-# Full Stack MERN Auctioneer App
+# Full Stack MERN App Starter
 
 ### About
 
