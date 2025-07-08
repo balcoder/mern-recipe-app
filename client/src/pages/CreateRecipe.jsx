@@ -16,7 +16,7 @@ const CreateRecipe = () => {
     servings: 1,
     cookTime: 0,
     difficulty: "Medium",
-    ingredients: [defaultIngredient],
+    ingredients: [{ ...defaultIngredient }],
     instructions: [""],
     category: "",
     cuisine: "",
@@ -28,14 +28,16 @@ const CreateRecipe = () => {
   const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
+    console.log(defaultIngredient);
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const updateArrayField = (field, index, value, subfield = null) => {
     const updated = [...form[field]];
+
     // if subfield provided assume array contains object otherwise string
-    // ingredients = [{},{},..], instructions = ["","",...], images = ["","",...]
+    // ingredients = [{},{},..], instructions = ["","",...]
     if (subfield) {
       updated[index][subfield] = value;
     } else {
@@ -44,11 +46,32 @@ const CreateRecipe = () => {
     setForm((prev) => ({ ...prev, [field]: updated }));
   };
 
+  // const addField = (field, defaultValue) => {
+  //   //  onClick={() => addField("ingredients", defaultIngredient)}
+  //   console.log(` field:${field} ,ingredients: ${defaultValue}`);
+  //   debugger;
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     [field]: [...prev[field], { ...defaultValue }],
+  //   }));
+  // };
+
   const addField = (field, defaultValue) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: [...prev[field], defaultValue],
-    }));
+    setForm((prev) => {
+      // Determine whether to spread the defaultValue or use it directly
+      // This checks if defaultValue is a plain object (not null and not an array)
+      const newValue =
+        typeof defaultValue === "object" &&
+        defaultValue !== null &&
+        !Array.isArray(defaultValue)
+          ? { ...defaultValue } // Create a shallow copy for objects
+          : defaultValue; // Use the value directly for primitives (strings, numbers, etc.)
+
+      return {
+        ...prev,
+        [field]: [...prev[field], newValue],
+      };
+    });
   };
 
   const handleSubmit = (e) => {
