@@ -1,3 +1,10 @@
+import {
+  getDownloadURL,
+  getStorage,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { ref } from "firebase/storage";
+import { app } from "../firebase";
 import { useState } from "react";
 
 const defaultIngredient = { name: "", amount: "", unit: "", notes: "" };
@@ -14,8 +21,11 @@ const CreateRecipe = () => {
     category: "",
     cuisine: "",
     tags: [""],
-    images: [""],
+    images: [],
   });
+  const [fileList, setFileList] = useState([]);
+  const [imageUploadError, setImageUploadError] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +55,65 @@ const CreateRecipe = () => {
     e.preventDefault();
     console.log(form);
     // submit logic goes here
+  };
+  const handleImageSubmit = () => {
+    console.log("Filelist:");
+    console.log(fileList);
+    console.log(form.images);
+    if (fileList.length > 0 && fileList.length + form.images.length < 4) {
+      setUploading(true);
+      setImageUploadError(false);
+      const promises = [];
+      for (let i = 0; i < fileList.length; i++) {
+        promises.push(storeImage(fileList[i]));
+      }
+      Promise.all(promises)
+        .then((urls) => {
+          setForm((prev) => ({
+            ...prev,
+            images: form.images.concat(urls),
+          }));
+          setImageUploadError(false);
+          setUploading(false);
+        })
+        .catch(() => {
+          setImageUploadError("Image upload failed (2mb max per image)");
+        });
+    } else {
+      setImageUploadError("You can only upload 3 images per Recipe");
+    }
+  };
+
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}`);
+        },
+        (error) => {
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+            resolve(downloadUrl);
+          });
+        }
+      );
+    });
+  };
+
+  const handleRemoveImage = (index) => {
+    setForm({
+      ...form,
+      images: form.images.filter((_, i) => i != index),
+    });
   };
 
   return (
@@ -299,19 +368,50 @@ const CreateRecipe = () => {
 
         <div className="flex flex-wrap gap-2">
           <label className="w-full text-sm font-medium text-gray-700 mb-2">
-            Images: The first image will be the cover (max 6)
+            Images: The first image will be the cover (max 3)
           </label>
           <input
+            onChange={(e) => {
+              setFileList(e.target.files);
+            }}
             className="flex-1 p-3 border rounded-lg border-green-700"
             type="file"
             id="images"
             accept="image/*"
             multiple
           />
-          <button className="flex-shrink p-3 text-green-700 border rounded uppercase hover:shadow-lg disabled:opacity-80">
-            Upload
+          <button
+            type="button"
+            disabled={uploading}
+            onClick={handleImageSubmit}
+            className="flex-shrink p-3 text-green-700 border rounded uppercase hover:shadow-lg disabled:opacity-80"
+          >
+            {uploading ? "Uploading.." : "Upload"}
           </button>
+          <p className="flex-1 text-red-700">
+            {imageUploadError && imageUploadError}
+          </p>
         </div>
+        {form.images.length > 0 &&
+          form.images.map((url, idx) => (
+            <div
+              key={url}
+              className="flex justify-between p-3 border items-center"
+            >
+              <img
+                src={url}
+                alt="recipe"
+                className="w-40 h-40 object-contain rounded-lg"
+              />
+              <button
+                onClick={() => handleRemoveImage(idx)}
+                type="button"
+                className=" text-red-700 font-semibold p-3 rounded-lg hover:opacity-70"
+              >
+                Delete
+              </button>
+            </div>
+          ))}
         {/* <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Image URLs
