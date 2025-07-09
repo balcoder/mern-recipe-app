@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
+import Recipe from "../models/recipe.model.js";
 
 export const updateUser = async (req, res, next) => {
   //compare id returned form verifyUser.js(req.user.id) to the id in params
@@ -61,6 +62,17 @@ export const deleteUser = async (req, res, next) => {
     await User.findByIdAndDelete(req.params.id);
     res.clearCookie("access_token");
     res.status(200).json("Your profile has been deleted");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserRecipes = async (req, res, next) => {
+  if (req.user.id !== req.params.id)
+    return next(errorHandler(401, "You can only load you own recipes"));
+  try {
+    const recipes = await Recipe.find({ createdBy: req.params.id });
+    res.status(200).json(recipes);
   } catch (error) {
     next(error);
   }
