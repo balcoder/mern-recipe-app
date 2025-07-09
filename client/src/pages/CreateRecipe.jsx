@@ -6,10 +6,14 @@ import {
 import { ref } from "firebase/storage";
 import { app } from "../firebase";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const defaultIngredient = { name: "", amount: "", unit: "", notes: "" };
 
 const CreateRecipe = () => {
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -22,10 +26,14 @@ const CreateRecipe = () => {
     cuisine: "",
     tags: [""],
     images: [],
+    createdBy: currentUser,
   });
+
   const [fileList, setFileList] = useState([]);
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadDataError, setUploadDataError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     console.log(defaultIngredient);
@@ -46,16 +54,6 @@ const CreateRecipe = () => {
     setForm((prev) => ({ ...prev, [field]: updated }));
   };
 
-  // const addField = (field, defaultValue) => {
-  //   //  onClick={() => addField("ingredients", defaultIngredient)}
-  //   console.log(` field:${field} ,ingredients: ${defaultValue}`);
-  //   debugger;
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     [field]: [...prev[field], { ...defaultValue }],
-  //   }));
-  // };
-
   const addField = (field, defaultValue) => {
     setForm((prev) => {
       // Determine whether to spread the defaultValue or use it directly
@@ -74,17 +72,38 @@ const CreateRecipe = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
-    // submit logic goes here
+    console.log(form, currentUser);
+    try {
+      // make sure we have an image
+      if (form.images.length < 1)
+        return setUploadDataError("You must have a least one image");
+      setLoading(true);
+      setUploadDataError(false);
+      const res = await fetch("api/recipe/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+        createdBy: currentUser._id,
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (data.success === false) {
+        setUploadDataError(data.message);
+      }
+      navigate(`/recipes/${data._id}`);
+    } catch (error) {
+      setUploadDataError(error.message);
+      setUploading(false);
+    }
   };
   const handleImageSubmit = () => {
-    console.log("Filelist:");
-    console.log(fileList);
-    console.log(form.images);
     if (fileList.length > 0 && fileList.length + form.images.length < 4) {
       setUploading(true);
+      setUploadDataError(false);
       setImageUploadError(false);
       const promises = [];
       for (let i = 0; i < fileList.length; i++) {
@@ -435,36 +454,17 @@ const CreateRecipe = () => {
               </button>
             </div>
           ))}
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Image URLs
-          </label>
-          {form.images.map((img, idx) => (
-            <input
-              key={idx}
-              type="file"
-              placeholder="Choose image"
-              value={img}
-              accept="image/*"
-              onChange={(e) => updateArrayField("images", idx, e.target.value)}
-              className="w-full mb-2 px-4 py-2 border rounded-lg focus:outline-none"
-            />
-          ))}
-          <button
-            type="button"
-            onClick={() => addField("images", "")}
-            className="text-blue-700 text-sm font-medium hover:underline"
-          >
-            + Add Image
-          </button>
-        </div> */}
 
         {/* Submit */}
+        {uploadDataError && (
+          <p className="text-sm text-red-700">{uploadDataError}</p>
+        )}
         <button
+          disabled={loading || uploading}
           type="submit"
           className="bg-slate-700 text-white px-6 py-3 rounded-lg shadow hover:opacity-95 transition"
         >
-          Create Recipe
+          {loading ? "Creating..." : "Create Recipe"}
         </button>
       </form>
     </div>
