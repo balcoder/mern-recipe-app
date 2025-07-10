@@ -8,6 +8,7 @@ import SignUp from "./pages/SignUp";
 import CreateRecipe from "./pages/CreateRecipe";
 import Header from "./components/Header";
 import PrivateRoute from "./components/PrivateRoute";
+import UpdateRecipe from "./pages/UpdateRecipe";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/create-recipe" element={<CreateRecipe />} />
+          <Route path="/update-recipe/:recipeId" element={<UpdateRecipe />} />
         </Route>
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />

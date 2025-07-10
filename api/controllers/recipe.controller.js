@@ -50,3 +50,19 @@ export const updateRecipe = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getRecipe = async (req, res, next) => {
+  ///check for valid moongo ObjectId
+  if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    // valid ObjectId, proceed with findById call.
+    return next(errorHandler(404, "Recipe not found"));
+  }
+  try {
+    const recipe = await Recipe.findById(req.params.id);
+    // check if recipe exists
+    if (!recipe) return next(errorHandler(404, "Recipe not found"));
+    res.status(200).json(recipe);
+  } catch (error) {
+    next(error);
+  }
+};
