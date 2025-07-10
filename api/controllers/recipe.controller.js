@@ -25,3 +25,28 @@ export const deleteRecipe = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateRecipe = async (req, res, next) => {
+  //check for valid moongo ObjectId
+  if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    // valid ObjectId, proceed with findById call.
+    return next(errorHandler(404, "Recipe not found"));
+  }
+  const recipe = await Recipe.findById(req.params.id);
+  // check if recipe exists
+  if (!recipe) return next(errorHandler(404, "Recipe not found"));
+  // check if recipe belongs to user
+  if (req.user.id !== recipe.createdBy.toString()) {
+    return next(errorHandler(401, "You can only update your own recipes"));
+  }
+  try {
+    const updatedRecipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.status(200).json(updatedRecipe);
+  } catch (error) {
+    next(error);
+  }
+};
