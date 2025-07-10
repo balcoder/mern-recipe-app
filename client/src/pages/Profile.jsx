@@ -152,6 +152,25 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteRecipe = async (recipeId) => {
+    try {
+      const res = await fetch(`/api/recipe/delete/${recipeId}`, {
+        method: "DELETE",
+      });
+      const data = res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      // update the recipe listings
+      setUserRecipes((prev) =>
+        prev.filter((recipe) => recipe._id !== recipeId)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -266,7 +285,12 @@ export default function Profile() {
                 {recipe.title}
               </Link>
               <div className="flex flex-col gap-2 items-center">
-                <button className="text-red-700 uppercase">Delete</button>
+                <button
+                  onClick={() => handleDeleteRecipe(recipe._id)}
+                  className="text-red-700 uppercase"
+                >
+                  Delete
+                </button>
                 <button className="text-green-700 uppercase">Edit</button>
               </div>
             </div>
