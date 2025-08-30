@@ -92,7 +92,6 @@ const UpdateRecipe = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const recipeId = params.recipeId;
-    console.log(form, currentUser);
     try {
       // make sure we have an image
       if (form.images.length < 1)
@@ -112,7 +111,7 @@ const UpdateRecipe = () => {
       if (data.success === false) {
         setUploadDataError(data.message);
       }
-      navigate(`/recipes/${data._id}`);
+      navigate(`/recipe/${data._id}`);
     } catch (error) {
       setUploadDataError(error.message);
       setUploading(false);

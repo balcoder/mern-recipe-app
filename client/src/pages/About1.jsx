@@ -1,3 +1,82 @@
+// import React from "react";
+// import hero from "../assets/images/about-hero.jpg";
+
+// export default function About() {
+//   return (
+//     <div className="bg-white text-gray-800 px-6 py-12 max-w-6xl mx-auto mt-4 shadow-md rounded-md">
+//       {/* Hero / Intro */}
+//       <section className="text-center mb-12">
+//         <img src={hero} alt="hero" />
+//         <h1 className="text-4xl font-bold my-4">About Us</h1>
+//         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+//           Welcome to{" "}
+//           <span className="text-blue-600 font-semibold">FlavorHub</span> — your
+//           trusted source for discovering and sharing incredible recipes from
+//           around the world.
+//         </p>
+//       </section>
+
+//       {/* Our Story */}
+//       <section className="mb-12">
+//         <h2 className="text-2xl font-semibold mb-4">Our Story</h2>
+//         <p className="text-gray-700 leading-relaxed">
+//           It all started with a shared love for food and a frustration with
+//           cluttered recipe websites. We wanted something modern, clean, and
+//           community-driven — so we built FlavorHub. Whether you're a beginner
+//           learning to boil pasta or a foodie experimenting with global cuisines,
+//           we’re here to make cooking more joyful.
+//         </p>
+//       </section>
+
+//       {/* What Makes Us Different */}
+//       <section className="mb-12">
+//         <h2 className="text-2xl font-semibold mb-4">What Makes Us Different</h2>
+//         <ul className="grid sm:grid-cols-2 gap-4 text-gray-700 list-disc list-inside">
+//           <li>✨ Clean, ad-free interface built for ease and speed</li>
+//           <li>📷 Upload your own photos and step-by-step recipes</li>
+//           <li>🔎 Smart filtering by category, cuisine, or tags</li>
+//           <li>⭐ Honest reviews and community-driven ratings</li>
+//         </ul>
+//       </section>
+
+//       {/* Mission Statement */}
+//       <section className="mb-12">
+//         <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
+//         <p className="text-gray-700 leading-relaxed">
+//           Our mission is simple: to inspire people to cook more at home, try new
+//           things, and connect through food. We believe cooking should be fun,
+//           approachable, and accessible to everyone.
+//         </p>
+//       </section>
+
+//       {/* Meet the Team */}
+//       <section className="mb-12">
+//         <h2 className="text-2xl font-semibold mb-4">Meet the Maker</h2>
+//         <p className="text-gray-700">
+//           FlavorHub is built with ❤️ by{" "}
+//           <span className="font-medium">[Your Name]</span>, a developer and home
+//           cook who believes that food is one of the greatest forms of creativity
+//           and connection.
+//         </p>
+//       </section>
+
+//       {/* CTA */}
+//       <section className="text-center mt-16">
+//         <h2 className="text-2xl font-bold mb-4">Ready to start cooking?</h2>
+//         <p className="text-gray-600 mb-6">
+//           Explore new recipes, share your own, and join a growing community of
+//           food lovers.
+//         </p>
+//         <a
+//           href="/recipes"
+//           className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition shadow"
+//         >
+//           Browse Recipes
+//         </a>
+//       </section>
+//     </div>
+//   );
+// }
 import hero from "../assets/images/head-shot.jpg";
 import chicken from "../assets/images/chicken.jpg";
 import foodDrink from "../assets/images/food-and-drink.jpg";
@@ -7,7 +86,7 @@ import sideDish from "../assets/images/side-dish.jpg";
 
 export default function About() {
   return (
-    <main className="flex-auto m-0 sm:m-6 sm:rounded-lg bg-white p-6">
+    <main className="flex-auto m-6 rounded-lg bg-white p-6">
       <div className="sm:px-8 mt-9">
         <div className="mx-auto w-full max-w-7xl lg:px-8">
           <div className="mx-auto my-4 max-w-7xl px-4 sm:px-8 lg:px-12">
@@ -96,7 +175,7 @@ export default function About() {
         </div>
       </div>
       <div className="mt-16 sm:mt-20">
-        <div className="flex justify-center gap-5 py-4 sm:gap-8">
+        <div className="flex justify-center gap-5 overflow-hidden py-4 sm:gap-8">
           <div className="relative aspect-9/10 w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:rounded-2xl dark:bg-zinc-800 rotate-2">
             <img
               src={chicken}
